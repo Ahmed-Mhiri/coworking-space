@@ -1,0 +1,199 @@
+.navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 60px;
+  background: linear-gradient(135deg, #4b0082, #6a0dad);
+  color: #eee;
+  box-shadow: 0 2px 12px rgba(106, 13, 173, 0.8);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  padding: 0 2rem;
+}
+
+.navbar-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-weight: 900;
+  font-size: 1.8rem;
+  letter-spacing: 2px;
+  user-select: none;
+  color: #f3e8ff;
+  text-shadow: 0 0 10px #b19cd9;
+  cursor: default;
+  transition: color 0.3s ease;
+}
+.logo:hover {
+  color: #e0bbff;
+}
+
+/* Nav links & buttons */
+.nav-links {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.nav-links li a,
+.signout-btn {
+  color: #ddd;
+  font-weight: 600;
+  font-size: 1.05rem;
+  text-decoration: none;
+  padding: 8px 15px;
+  border-radius: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  box-shadow: inset 0 0 0 0 transparent;
+  user-select: none;
+  transition: background-color 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.nav-links li a:hover,
+.nav-links li a.active,
+.signout-btn:hover {
+  color: #fff;
+  background: rgba(255 255 255 / 0.15);
+  box-shadow: 0 4px 12px rgba(106, 13, 173, 0.6);
+  text-shadow: 0 0 5px #d1a3ff;
+}
+
+.signout-btn {
+  font-weight: 700;
+  outline: none;
+  transition: background-color 0.3s ease;
+}
+
+/* Hamburger menu */
+.menu-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 28px;
+  height: 22px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 11000;
+  user-select: none;
+}
+.menu-toggle:focus {
+  outline: 2px solid #b19cd9;
+  outline-offset: 2px;
+}
+.menu-toggle .bar {
+  width: 28px;
+  height: 3.5px;
+  background-color: #eee;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  transform-origin: 1px;
+}
+.menu-toggle.open .bar:nth-child(1) {
+  transform: rotate(45deg);
+}
+.menu-toggle.open .bar:nth-child(2) {
+  opacity: 0;
+  transform: translateX(20px);
+}
+.menu-toggle.open .bar:nth-child(3) {
+  transform: rotate(-45deg);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .menu-toggle {
+    display: flex;
+  }
+
+  .nav-links {
+    position: fixed;
+    top: 60px; right: 0;
+    height: calc(100vh - 60px);
+    width: 250px;
+    background: linear-gradient(135deg, #4b0082, #6a0dad);
+    flex-direction: column;
+    padding: 2rem 1.5rem;
+    gap: 1.5rem;
+    box-shadow: -4px 0 24px rgba(106, 13, 173, 0.8);
+    transform: translateX(100%);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+
+  .nav-links.active {
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .nav-links li a,
+  .signout-btn {
+    font-size: 1.25rem;
+  }
+}
+
+/* Button */
+.button {
+  position: relative;
+  width: 120px;
+  height: 40px;
+  background-color: #000;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  gap: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+}
+
+.button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  left: -4px;
+  top: -1px;
+  margin: auto;
+  width: 128px;
+  height: 48px;
+  border-radius: 10px;
+  background: linear-gradient(-45deg, #e81cff 0%, #40c9ff 100%);
+  z-index: -10;
+  pointer-events: none;
+  transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.button::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(-45deg, #fc00ff 0%, #00dbde 100%);
+  filter: blur(20px);
+  transform: translate3d(0, 0, 0) scale(0.95);
+  z-index: -1;
+  pointer-events: none;
+}
+.button:hover::after {
+  filter: blur(30px);
+}
+.button:hover::before {
+  transform: rotate(-180deg);
+}
+.button:active::before {
+  transform: scale(0.7);
+}

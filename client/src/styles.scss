@@ -1,0 +1,23 @@
+/* You can add global styles to this file, and also import other style files */
+@import "tailwindcss";
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+body {
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f9fafb; /* light gray background */
+  color: #1f2937; /* dark gray text for readability */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden; /* prevent horizontal scroll */
+}
+// src/styles.scss
+
+/* Adds a subtle dot pattern for a more premium background texture */
+.subtle-dot-pattern {
+  background-image: radial-gradient(circle at 1px 1px, #e8e8e8 1px, transparent 0);
+  background-size: 20px 20px;
+}

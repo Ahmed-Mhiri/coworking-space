@@ -1,0 +1,93 @@
+<div class="min-h-screen bg-neutral-background">
+  <app-admin-navbar></app-admin-navbar>
+
+  <main class="p-6">
+    <div class="container mx-auto">
+      
+      <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 class="text-2xl font-bold text-neutral-text">Gestion des Salles</h1>
+          <p class="text-neutral-text-light">Ajoutez, modifiez ou supprimez des salles et consultez leur occupation.</p>
+        </div>
+        <button nz-button nzType="primary" (click)="openRoomModal(roomFormModal)">
+          <span nz-icon nzType="plus"></span> Ajouter une Salle
+        </button>
+      </div>
+
+      <div class="mb-6 rounded-lg bg-white p-4 shadow-sm border border-neutral-border flex flex-wrap items-center gap-4">
+        <label class="font-semibold text-neutral-text">Consulter l'occupation pour le :</label>
+        <nz-date-picker [(ngModel)]="selectedDateTime" (ngModelChange)="loadOccupancies()"></nz-date-picker>
+        <nz-time-picker [(ngModel)]="selectedDateTime" (ngModelChange)="loadOccupancies()" nzFormat="HH:mm:ss"></nz-time-picker>
+      </div>
+      
+      <div *ngIf="rooms.length > 0; else noRooms">
+        <div *ngFor="let type of Object.keys(roomsGroupedByType)" class="mb-8">
+          <h3 class="text-xl font-semibold text-neutral-text mb-4">{{ formatRoomType(type) }}</h3>
+          
+          <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div *ngFor="let room of roomsGroupedByType[type]" class="rounded-lg bg-white p-6 shadow-md border border-transparent hover:border-lime transition-all">
+              <div class="flex justify-between items-start">
+                <div>
+                  <p class="text-neutral-text-light text-sm">Capacité</p>
+                  <p class="text-2xl font-bold text-neutral-text">{{ room.sizeLimit }}</p>
+                </div>
+                <nz-tag [nzColor]="(occupancyMap.get(room.id!) || 0) === 0 ? 'green' : (occupancyMap.get(room.id!) || 0) < room.sizeLimit ? 'blue' : 'red'">
+                  Occupé: {{ occupancyMap.get(room.id!) || 0 }} / {{ room.sizeLimit }}
+                </nz-tag>
+              </div>
+              <nz-divider></nz-divider>
+              <div class="flex justify-between items-center">
+                <p class="text-lg font-semibold text-lime">${{ room.pricePerHour }}/hr</p>
+                <div class="space-x-2">
+                  <button nz-button nz-tooltip="Modifier" nzShape="circle" (click)="openRoomModal(roomFormModal, room)">
+                    <span nz-icon nzType="edit"></span>
+                  </button>
+                  <button nz-button nz-tooltip="Supprimer" nzShape="circle" nzDanger
+                    nz-popconfirm
+                    nzPopconfirmTitle="Êtes-vous sûr de vouloir supprimer cette salle ?"
+                    (nzOnConfirm)="deleteRoom(room.id!)"
+                  >
+                    <span nz-icon nzType="delete"></span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <ng-template #noRooms>
+        <div class="rounded-lg bg-white p-12">
+          <nz-empty nzNotFoundContent="Aucune salle n'a été trouvée. Commencez par en ajouter une !"></nz-empty>
+        </div>
+      </ng-template>
+
+    </div>
+  </main>
+</div>
+
+
+<ng-template #roomFormModal>
+  <form [formGroup]="roomForm" nz-form>
+    <nz-form-item>
+      <nz-form-label nzRequired>Type de Salle</nz-form-label>
+      <nz-form-control nzErrorTip="Veuillez sélectionner un type !">
+        <nz-select formControlName="type" nzPlaceHolder="Sélectionnez un type">
+          <nz-option *ngFor="let type of roomTypes" [nzValue]="type" [nzLabel]="formatRoomType(type)"></nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label nzRequired>Capacité</nz-form-label>
+      <nz-form-control nzErrorTip="Veuillez entrer une capacité valide (min 1).">
+        <nz-input-number formControlName="sizeLimit" [nzMin]="1" class="w-full"></nz-input-number>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label nzRequired>Prix par Heure</nz-form-label>
+      <nz-form-control nzErrorTip="Veuillez entrer un prix valide.">
+        <nz-input-number formControlName="pricePerHour" [nzMin]="0" [nzStep]="0.5" class="w-full"></nz-input-number>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+</ng-template>

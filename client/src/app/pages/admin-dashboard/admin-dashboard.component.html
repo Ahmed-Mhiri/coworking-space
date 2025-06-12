@@ -1,0 +1,60 @@
+<div class="min-h-screen bg-neutral-background">
+  <app-admin-navbar></app-admin-navbar>
+
+  <main class="p-6">
+    <div class="container mx-auto">
+      
+      <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 class="text-2xl font-bold text-neutral-text">Tableau de Bord</h1>
+          <p class="text-neutral-text-light">Bienvenue, Admin ! Voici un aperçu de l'activité.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <nz-range-picker [(ngModel)]="dateRange" (ngModelChange)="onDateRangeChange($event)"></nz-range-picker>
+          <button nz-button nzType="primary" (click)="exportChartAsImage()">
+  <span nz-icon nzType="download"></span> Exporter
+</button>
+        </div>
+      </div>
+
+      <div class="mb-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="rounded-xl bg-white p-6 shadow-sm border border-transparent hover:border-lime transition-all">
+          <nz-statistic nzTitle="Revenu Total (€)" [nzValue]="12835" [nzValueStyle]="{ color: '#5b8c00' }"></nz-statistic>
+        </div>
+        <div class="rounded-xl bg-white p-6 shadow-sm border border-transparent hover:border-lime transition-all">
+          <nz-statistic nzTitle="Réservations (Mois)" [nzValue]="452"></nz-statistic>
+        </div>
+        <div class="rounded-xl bg-white p-6 shadow-sm border border-transparent hover:border-lime transition-all">
+          <nz-statistic nzTitle="Nouveaux Utilisateurs" [nzValue]="112" [nzValueStyle]="{ color: '#005b8c' }"></nz-statistic>
+        </div>
+        <div class="rounded-xl bg-white p-6 shadow-sm border border-transparent hover:border-lime transition-all">
+          <nz-statistic nzTitle="Taux d'Occupation" [nzValue]="76" [nzSuffix]="'%'"></nz-statistic>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 gap-6 lg:grid-cols-6">
+
+        <div class="rounded-xl bg-white p-6 shadow-sm lg:col-span-4 h-96">
+          <h3 class="font-semibold text-neutral-text">Tendance des Revenus Mensuels</h3>
+          <div class="h-full w-full pt-4"><canvas #monthlyRevenueTrendChart></canvas></div>
+        </div>
+
+        <div class="rounded-xl bg-white p-6 shadow-sm lg:col-span-2 h-96">
+          <h3 class="font-semibold text-neutral-text">Revenus par Type d'Utilisateur</h3>
+          <div class="h-full w-full pt-4"><canvas #revenueByUserTypeChart></canvas></div>
+        </div>
+        
+        <div class="rounded-xl bg-white p-6 shadow-sm lg:col-span-3 h-96">
+          <h3 class="font-semibold text-neutral-text">Tendance des Réservations Journalières</h3>
+          <div class="h-full w-full pt-4"><canvas #dailyBookingsTrendChart></canvas></div>
+        </div>
+        
+        <div class="rounded-xl bg-white p-6 shadow-sm lg:col-span-3 h-96">
+          <h3 class="font-semibold text-neutral-text">Types de Salles les Plus Réservés</h3>
+          <div class="h-full w-full pt-4"><canvas #topBookedRoomTypesChart></canvas></div>
+        </div>
+        
+        </div>
+    </div>
+  </main>
+</div>

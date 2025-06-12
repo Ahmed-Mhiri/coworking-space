@@ -1,0 +1,78 @@
+<nz-header class="bg-white px-6 shadow">
+  <div class="container mx-auto flex h-full items-center justify-between">
+
+    <div class="flex items-center gap-2">
+      <a routerLink="/" class="flex items-center gap-2 text-xl font-bold text-lime">
+        <span nz-icon nzType="home" nzTheme="fill"></span>
+        <span>Coworking</span>
+      </a>
+    </div>
+
+    <div class="hidden flex-grow items-center justify-center md:flex">
+      <ul nz-menu nzMode="horizontal" class="border-b-0 leading-loose">
+        <li nz-menu-item routerLink="/intern-dashboard" routerLinkActive="ant-menu-item-selected">
+          <span nz-icon nzType="read" class="align-middle"></span>
+          Mes Cours
+        </li>
+        <li nz-menu-item routerLink="/intern/booking" routerLinkActive="ant-menu-item-selected">
+          <span nz-icon nzType="calendar" class="align-middle"></span>
+          Mes Réservations
+        </li>
+      </ul>
+    </div>
+
+    <div class="hidden items-center md:flex">
+      <a nz-dropdown [nzDropdownMenu]="userMenu" nzPlacement="bottomRight" class="flex items-center cursor-pointer">
+        <nz-avatar nzIcon="user" class="bg-lime-light text-lime-dark"></nz-avatar>
+        <span class="ml-2 font-semibold text-neutral-text">Intern</span>
+        <span nz-icon nzType="down" class="ml-1 text-xs"></span>
+      </a>
+    </div>
+
+    <button (click)="openDrawer()" nz-button nzType="text" class="text-neutral-text md:hidden">
+      <span nz-icon nzType="menu" nzTheme="outline" class="text-xl"></span>
+    </button>
+
+  </div>
+</nz-header>
+
+<nz-dropdown-menu #userMenu="nzDropdownMenu">
+  <ul nz-menu>
+    <li nz-menu-item>
+      <span nz-icon nzType="user" class="mr-2"></span>
+      Mon Profil
+    </li>
+    <li nz-menu-divider></li>
+    <li nz-menu-item (click)="signOut()">
+      <span nz-icon nzType="logout" class="mr-2"></span>
+      Se déconnecter
+    </li>
+  </ul>
+</nz-dropdown-menu>
+
+<nz-drawer
+  [nzClosable]="false"
+  [nzVisible]="isDrawerVisible"
+  (nzOnClose)="closeDrawer()"
+  nzPlacement="right"
+  nzTitle="Menu"
+  class="md:hidden"
+>
+  <ng-template nzDrawerContent>
+    <ul nz-menu nzMode="inline" class="border-e-0">
+      <li nz-menu-item routerLink="/intern-dashboard" (click)="closeDrawer()">
+        <span nz-icon nzType="read"></span> Mes Cours
+      </li>
+      <li nz-menu-item routerLink="/intern/booking" (click)="closeDrawer()">
+        <span nz-icon nzType="calendar"></span> Mes Réservations
+      </li>
+      <li nz-menu-divider></li>
+      <li nz-menu-item (click)="closeDrawer()">
+        <span nz-icon nzType="user"></span> Mon Profil
+      </li>
+      <li nz-menu-item (click)="signOut()">
+        <span nz-icon nzType="logout"></span> Se déconnecter
+      </li>
+    </ul>
+  </ng-template>
+</nz-drawer>

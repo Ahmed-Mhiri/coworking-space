@@ -1,0 +1,40 @@
+<nz-header class="bg-white px-6 shadow">
+  <div class="container mx-auto flex h-full items-center justify-between">
+    
+    <div class="flex items-center gap-2">
+      <a routerLink="/admin-dashboard" class="flex items-center gap-2 text-xl font-bold text-lime">
+        <span nz-icon nzType="home" nzTheme="fill"></span>
+        <span>Coworking<span class="ml-2 text-sm font-light text-neutral-text-light">Admin</span></span>
+      </a>
+    </div>
+
+    <div class="flex-grow">
+      <ul nz-menu nzMode="horizontal" class="border-b-0 leading-loose">
+        <li nz-menu-item routerLink="/admin-dashboard" routerLinkActive="ant-menu-item-selected">Dashboard</li>
+        <li nz-menu-item routerLink="/admin-management" routerLinkActive="ant-menu-item-selected">Management</li>
+      </ul>
+    </div>
+
+    <div class="flex items-center">
+      <a nz-dropdown [nzDropdownMenu]="userMenu" nzPlacement="bottomRight">
+        <nz-avatar nzIcon="user" class="bg-lime-light text-lime-dark"></nz-avatar>
+        <span class="ml-2 font-semibold text-neutral-text">Admin User</span>
+        <span nz-icon nzType="down" class="ml-1 text-xs"></span>
+      </a>
+    </div>
+  </div>
+</nz-header>
+
+<nz-dropdown-menu #userMenu="nzDropdownMenu">
+  <ul nz-menu>
+    <li nz-menu-item>
+      <span nz-icon nzType="setting" class="mr-2"></span>
+      Settings
+    </li>
+    <li nz-menu-divider></li>
+    <li nz-menu-item (click)="signOut()">
+      <span nz-icon nzType="logout" class="mr-2"></span>
+      Sign Out
+    </li>
+  </ul>
+</nz-dropdown-menu>

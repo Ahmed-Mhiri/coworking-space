@@ -1,0 +1,212 @@
+<div class="min-h-screen bg-neutral-background">
+  <app-freelancer-navbar *ngIf="isFreelancer"></app-freelancer-navbar>
+  <app-intern-navbar *ngIf="!isFreelancer"></app-intern-navbar>
+
+  <main class="p-6">
+    <div class="container mx-auto">
+
+      <div class="mb-6">
+        <h1 class="text-2xl font-bold text-neutral-text">Effectuer une Réservation</h1>
+        <p class="text-neutral-text-light">Suivez les étapes pour réserver votre espace de travail idéal.</p>
+      </div>
+
+      <div class="rounded-xl bg-white p-8 shadow-md">
+        <nz-steps [nzCurrent]="currentStep">
+          <nz-step nzTitle="Choisir la Période"></nz-step>
+          <nz-step nzTitle="Sélectionner la Salle"></nz-step>
+          <nz-step nzTitle="Paiement et Confirmation"></nz-step>
+        </nz-steps>
+
+        <nz-divider></nz-divider>
+
+        <div *ngIf="currentStep === 0">
+          <form nz-form [formGroup]="bookingForm" (ngSubmit)="checkAvailability()" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <nz-form-item>
+              <nz-form-label nzRequired nzFor="bookingDate">Date</nz-form-label>
+              <nz-form-control nzErrorTip="Veuillez sélectionner une date!">
+                <nz-date-picker
+                  id="bookingDate"
+                  class="w-full"
+                  formControlName="date"
+                  [nzDisabledDate]="disabledPastDates"
+                  nzFormat="yyyy-MM-dd"
+                ></nz-date-picker>
+              </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item>
+              <nz-form-label nzRequired nzFor="startTime">Heure de début</nz-form-label>
+              <nz-form-control nzErrorTip="Veuillez sélectionner une heure de début!">
+                <nz-time-picker
+                  id="startTime"
+                  class="w-full"
+                  formControlName="startTime"
+                  nzFormat="HH:mm"
+                  [nzMinuteStep]="30"
+                  nzUse12Hours
+                ></nz-time-picker>
+              </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item>
+              <nz-form-label nzRequired nzFor="endTime">Heure de fin</nz-form-label>
+              <nz-form-control nzErrorTip="Veuillez sélectionner une heure de fin!">
+                <nz-time-picker
+                  id="endTime"
+                  class="w-full"
+                  formControlName="endTime"
+                  nzFormat="HH:mm"
+                  [nzMinuteStep]="30"
+                  nzUse12Hours
+                ></nz-time-picker>
+              </nz-form-control>
+            </nz-form-item>
+
+            <div class="md:col-span-3 text-right mt-4">
+              <button nz-button nzType="primary" type="submit" [nzLoading]="loadingAvailability">
+                <span nz-icon nzType="search"></span> Vérifier la Disponibilité
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <div *ngIf="currentStep === 1">
+          <nz-spin [nzSpinning]="loadingAvailability">
+            <div *ngIf="availableRooms.length > 0; else noRoomsFound" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+              <div *ngFor="let room of availableRooms"
+                class="relative rounded-lg border-2 p-4 cursor-pointer transition-all duration-300"
+                [class.border-lime]="room === selectedRoom"
+                [class.bg-lime-light]="room === selectedRoom"
+                [class.border-neutral-border]="room !== selectedRoom"
+                (click)="selectRoom(room)"
+              >
+                <span *ngIf="room === selectedRoom" class="absolute top-2 right-2 text-lime text-2xl">
+                  <span nz-icon nzType="check-circle" nzTheme="fill"></span>
+                </span>
+                <div class="flex justify-between items-center">
+                  <h4 class="font-bold text-lg text-neutral-text">Salle #{{room.id}}</h4>
+                  <nz-tag>{{ room.type | titlecase }}</nz-tag>
+                </div>
+                <p class="text-sm text-neutral-text-light">Capacité: {{room.sizeLimit}} | Prix: ${{room.pricePerHour}}/hr</p>
+                <p *ngIf="selectedRoom === room && occupancy !== null" class="text-xs text-neutral-text-light mt-2">
+                  <span nz-icon nzType="team" class="mr-1"></span>Actuellement {{ occupancy }} personne(s) réservée(s) à cette heure.
+                </p>
+              </div>
+
+            </div>
+            <ng-template #noRoomsFound>
+              <nz-empty nzNotFoundContent="Aucune salle disponible pour cette période."></nz-empty>
+            </ng-template>
+          </nz-spin>
+          <div class="mt-6 flex justify-between">
+            <button nz-button (click)="goToStep(0)">Retour</button>
+            <button nz-button nzType="primary" [disabled]="!selectedRoom" (click)="confirmBookingAndPay()">
+              Confirmer la Salle et Payer &rarr;
+            </button>
+          </div>
+        </div>
+
+        <div *ngIf="currentStep === 2 && selectedRoom">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+              <h4 class="text-xl font-bold mb-4">Résumé de la Réservation</h4>
+              <div class="space-y-2 rounded-lg bg-neutral-background p-4">
+                <p class="flex justify-between"><strong>Salle:</strong> <span>#{{ selectedRoom.id }} ({{ selectedRoom.type | titlecase }})</span></p>
+                <p class="flex justify-between"><strong>Date:</strong> <span>{{ bookingForm.value.date | date:'longDate' }}</span></p>
+                <p class="flex justify-between"><strong>Période:</strong> <span>{{ bookingForm.value.startTime | date:'shortTime' }} - {{ bookingForm.value.endTime | date:'shortTime' }}</span></p>
+                <nz-divider></nz-divider>
+                <p class="flex justify-between text-xl font-bold"><strong>Prix Total:</strong> <span class="text-lime">{{ totalPrice | currency:'USD' }}</span></p>
+              </div>
+            </div>
+
+            <div>
+              <h4 class="text-xl font-bold mb-4">Paiement</h4>
+
+              <nz-radio-group [(ngModel)]="paymentMethod" class="mb-4 w-full">
+                <label nz-radio-button nzValue="creditCard" class="flex-grow text-center">Carte de Crédit</label>
+                <label nz-radio-button nzValue="paypal" class="flex-grow text-center">PayPal</label>
+              </nz-radio-group>
+
+              <form *ngIf="paymentMethod === 'creditCard'" nz-form [formGroup]="paymentForm">
+                <nz-form-item>
+                  <nz-form-control nzErrorTip="Nom requis">
+                    <input nz-input formControlName="cardName" placeholder="Nom sur la carte" />
+                  </nz-form-control>
+                </nz-form-item>
+                <nz-form-item>
+                  <nz-form-control nzErrorTip="Numéro de carte invalide">
+                    <input nz-input formControlName="cardNumber" placeholder="Numéro de carte" />
+                  </nz-form-control>
+                </nz-form-item>
+                <div class="grid grid-cols-2 gap-4">
+                  <nz-form-item>
+                    <nz-form-control nzErrorTip="Date invalide (MM/YY)">
+                      <input nz-input formControlName="expiry" placeholder="MM/YY" />
+                    </nz-form-control>
+                  </nz-form-item>
+                  <nz-form-item>
+                    <nz-form-control nzErrorTip="CVV invalide">
+                      <input nz-input formControlName="cvv" placeholder="CVV" />
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+              </form>
+
+              <div *ngIf="paymentMethod === 'paypal'" class="text-center my-8">
+                <p class="text-neutral-text-light mb-4">
+                  Vous serez redirigé vers PayPal pour compléter votre achat.
+                </p>
+                <img src="https://www.paypalobjects.com/webstatic/mktg/logo/pp_cc_mark_74x46.jpg" alt="PayPal" class="mx-auto" />
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-6 flex justify-between">
+            <button nz-button (click)="goToStep(1)">&larr; Retour</button>
+            <button nz-button nzType="primary" [nzLoading]="loadingSubmit" (click)="submitBooking()">
+              <span nz-icon nzType="check"></span> Confirmer & Payer {{ totalPrice | currency:'USD' }}
+            </button>
+          </div>
+        </div>
+
+        <div *ngIf="currentStep === 2 && !selectedRoom">
+          <nz-empty nzNotFoundContent="Aucune salle sélectionnée. Veuillez revenir à l'étape de sélection de salle."></nz-empty>
+          <div class="mt-6 text-center">
+            <button nz-button (click)="goToStep(1)">Retour à la sélection de salle</button>
+          </div>
+        </div>
+      </div>
+
+      <nz-collapse class="mt-8 rounded-xl shadow-md bg-white">
+        <nz-collapse-panel nzHeader="Voir mes réservations existantes ({{ bookings.length }})">
+          <div *ngIf="bookings.length > 0; else noExistingBookings" class="space-y-4">
+
+            <div *ngFor="let booking of bookings" class="p-4 rounded-lg bg-neutral-background border border-neutral-border">
+              <div class="flex flex-wrap justify-between items-center gap-4">
+                <div>
+                  <p class="font-bold text-neutral-text">Salle #{{ booking.room.id }} <span class="text-neutral-text-light font-normal">({{ booking.room.type | titlecase }})</span></p>
+                  <p class="text-sm text-neutral-text-light">
+                    <span nz-icon nzType="calendar" class="mr-1"></span>{{ booking.date | date:'fullDate' }}
+                  </p>
+                </div>
+                <div class="text-sm text-neutral-text-light">
+                  <span nz-icon nzType="clock-circle" class="mr-1"></span>{{ booking.startTime }} - {{ booking.endTime }}
+                </div>
+                <div>
+                  <nz-tag [nzColor]="booking.paid ? 'green' : 'gold'">{{ booking.paid ? 'Payé' : 'En attente' }}</nz-tag>
+                  <span class="ml-2 font-bold text-lg">{{ booking.amountPaid | currency:'USD' }}</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+          <ng-template #noExistingBookings>
+            <nz-empty nzNotFoundContent="Vous n'avez aucune réservation pour le moment."></nz-empty>
+          </ng-template>
+        </nz-collapse-panel>
+      </nz-collapse>
+
+    </div>
+  </main>
+</div>
